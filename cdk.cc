@@ -22,7 +22,7 @@
  * The names are replaced by their values when seen later in the code.
  */
 
-#define MATRIX_ROWS 6
+#define MATRIX_ROWS 5
 #define MATRIX_COLS 3
 #define BOX_WIDTH 15
 #define MATRIX_NAME_STRING "Test Matrix"
@@ -39,7 +39,7 @@ int main()
 
   // CDK uses offset 1 and C/C++ use offset 0.  Therefore, we create one more 
   // slot than necessary and ignore the value at location 0.
-  const char 		*rowTitles[MATRIX_ROWS+1] = {"IGNORE", "R1", "R2", "R3", "R4", "R5", "R6"};
+  const char 		*rowTitles[MATRIX_ROWS+1] = {"IGNORE", "R1", "R2", "R3", "R4", "R5"};
   const char 		*columnTitles[MATRIX_COLS+1] = {"IGNORE", "C1", "C2", "C3"};
   int		colWidths[MATRIX_COLS+1] = {BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH};
   int		boxTypes[MATRIX_COLS+1] = {vMIXED, vMIXED, vMIXED, vMIXED};
