@@ -1,8 +1,8 @@
 /*
- * Filename:            cdkexample.cc
- * Date:                11/08/2020
- * Author:              Stephen Perkins
- * Email:               stephen.perkins@utdallas.edu
+ * Filename:            cdk.cc
+ * Date:                11/25/2020
+ * Author:              David Ochoa
+ * Email:               dao170000@utdallas.edu
  * Version:             1.0
  * Copyright:           2020, All Rights Reserved
  *
@@ -27,7 +27,7 @@
 #define MATRIX_ROWS 5
 #define MATRIX_COLS 3
 #define BOX_WIDTH 25
-#define MATRIX_NAME_STRING "Binary File CDK"
+#define MATRIX_NAME_STRING "Binary File Contents"
 
 using namespace std;
 
@@ -42,21 +42,9 @@ int main()
   fstream fileStream;
   
   BinaryFileHeader binHeader;
-  //BinaryFileRecord binRecord;
+  BinaryFileRecord binRecord;
 
   fileStream.open(BINARYFILE, ios::in | ios::binary);
-
-  char* magicNumber = reinterpret_cast<char*>(&binHeader.magicNumber);
-  int size = sizeof(binHeader.magicNumber);
-  fileStream.read(magicNumber, size);
-  
-  char* versionNumber = reinterpret_cast<char*>(&binHeader.versionNumber);
-  size = sizeof(binHeader.versionNumber);
-  fileStream.read(versionNumber, size);
-
-  char* numRecords = reinterpret_cast<char*>(&binHeader.numRecords);
-  size = sizeof(binHeader.numRecords);
-  fileStream.read(numRecords, size);
 
   if(fileStream.fail())
     {
@@ -95,24 +83,46 @@ int main()
       _exit(1);
     }
   
-  // put into helper function
-  ostringstream stringstream;
-  string magic;
-  stringstream << std::hex << binHeader.magicNumber;
-  magic = "Magic: 0x" + boost::to_upper_copy<std::string>(stringstream.str());
+   
+  char* magicNumber = reinterpret_cast<char*>(&binHeader.magicNumber);
+  int size = sizeof(binHeader.magicNumber);
+  fileStream.read(magicNumber, size);
+  
+  char* versionNumber = reinterpret_cast<char*>(&binHeader.versionNumber);
+  size = sizeof(binHeader.versionNumber);
+  fileStream.read(versionNumber, size);
 
-  string version;
-  stringstream.str("");
-  stringstream << std::dec << binHeader.versionNumber;
-  version = "Version: " + stringstream.str();
+  char* numRecords = reinterpret_cast<char*>(&binHeader.numRecords);
+  size = sizeof(binHeader.numRecords);
+  fileStream.read(numRecords, size);
   
-  string records;
-  stringstream.str("");
-  stringstream << std::dec << binHeader.numRecords;
-  records = "Records: " + stringstream.str();
-  
-  
+
+  string magic = createTag(binHeader, "magic");
+  string version = createTag(binHeader, "version");
+  string records = createTag(binHeader, "records");
+  stringstream stream;
+  int numOfRecords = 0;
+  stream << size;
+  stream >> numOfRecords;
  
+  setCDKMatrixCell(myMatrix, 1, 1, magic.c_str());
+  setCDKMatrixCell(myMatrix, 1, 2, version.c_str());
+  setCDKMatrixCell(myMatrix, 1, 3, records.c_str());
+  int count = 0;
+  while(count < numOfRecords)
+    {
+      ostringstream myStream;
+      int size = sizeof(binRecord);
+      fileStream.read(reinterpret_cast<char*>(&binRecord), size);
+      
+      
+      string length = writeOut(binRecord, "length");
+      string buffer = writeOut(binRecord, "buffer");
+      
+      setCDKMatrixCell(myMatrix, count+2, 1, length.c_str());
+      setCDKMatrixCell(myMatrix, count+2, 2, buffer.c_str());  
+      count++;
+    }
 
 
   /* Display the Matrix */
@@ -121,9 +131,7 @@ int main()
   /*
    * Dipslay a message
    */
-  setCDKMatrixCell(myMatrix, 1, 1, magic.c_str());
-  setCDKMatrixCell(myMatrix, 1, 2, version.c_str());
-  setCDKMatrixCell(myMatrix, 1, 3, records.c_str());
+ 
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* so we can see results */

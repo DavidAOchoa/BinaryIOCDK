@@ -18,10 +18,10 @@
 CXX = g++
 
 # C pre-processor flags
-CPPFLAGS = -I /scratch/perkins/include -std=c++11
+CPPFLAGS = -Wall -g -I /scratch/perkins/include -std=c++11
 
 # compiler flags
-CXXFLAGS = -Wall
+#CXXFLAGS = -Wall
 
 # linker flags
 LDFLAGS = -L /scratch/perkins/lib
